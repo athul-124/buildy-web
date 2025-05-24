@@ -71,7 +71,7 @@ export default async function ExpertsPage({
               <SelectValue placeholder="All Specialties" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Specialties</SelectItem>
+              {/* <SelectItem value="">All Specialties</SelectItem> Removed this line */}
               {specialties.map(spec => (
                 <SelectItem key={spec} value={spec}>{spec}</SelectItem>
               ))}
@@ -114,7 +114,7 @@ export default async function ExpertsPage({
                   <SelectValue placeholder="All Specialties" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Specialties</SelectItem>
+                  {/* <SelectItem value="">All Specialties</SelectItem> Removed this line */}
                   {specialties.map(spec => (
                     <SelectItem key={spec} value={spec}>{spec}</SelectItem>
                   ))}

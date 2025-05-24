@@ -62,7 +62,7 @@ export default async function ServicesPage({
               <SelectValue placeholder="All Categories" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Categories</SelectItem>
+              {/* <SelectItem value="">All Categories</SelectItem> Removed this line */}
               {categories.map(cat => (
                 <SelectItem key={cat} value={cat}>{cat}</SelectItem>
               ))}
