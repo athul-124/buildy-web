@@ -1,0 +1,24 @@
+{
+  "name": "Buildly",
+  "short_name": "Buildly",
+  "description": "Connect with vetted home service experts in Thrissur. Transparent pricing, instant consultations, and AI-powered scheduling.",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "theme_color": "#318f3e",
+  "background_color": "#f8f6f3",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait"
+}
