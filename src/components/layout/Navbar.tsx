@@ -27,7 +27,7 @@ export function Navbar() {
       <div className="container flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
           <MessageCircle className="h-8 w-8 text-primary" />
-          <span className="text-xl font-bold text-foreground">Thrissur Home Joy</span>
+          <span className="text-xl font-bold text-foreground">Buildly</span>
         </Link>
 
         <nav className="hidden md:flex items-center space-x-2 lg:space-x-4">
@@ -67,7 +67,7 @@ export function Navbar() {
               <div className="flex flex-col space-y-4">
                 <Link href="/" className="flex items-center gap-2 mb-6" onClick={() => setIsMobileMenuOpen(false)}>
                   <MessageCircle className="h-8 w-8 text-primary" />
-                  <span className="text-xl font-bold text-foreground">Thrissur Home Joy</span>
+                  <span className="text-xl font-bold text-foreground">Buildly</span>
                 </Link>
                 {navLinks.map((link) => {
                   if (link.isAdmin && !pathname.startsWith('/admin')) {

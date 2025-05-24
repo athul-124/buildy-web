@@ -11,14 +11,14 @@ export default function OnboardingLayout({
       <header className="absolute top-0 left-0 w-full p-4 sm:p-6">
         <Link href="/" className="flex items-center gap-2 text-lg font-semibold text-foreground hover:text-primary transition-colors">
           <MessageSquareHeart className="h-7 w-7 text-primary" />
-          <span>Thrissur Home Joy</span>
+          <span>Buildly</span>
         </Link>
       </header>
       <main className="w-full max-w-2xl">
         {children}
       </main>
       <footer className="mt-8 text-center text-sm text-muted-foreground">
-        &copy; {new Date().getFullYear()} Thrissur Home Joy. Your trusted home service partner.
+        &copy; {new Date().getFullYear()} Buildly. Your trusted home service partner.
       </footer>
     </div>
   );

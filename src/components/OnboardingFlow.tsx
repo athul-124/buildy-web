@@ -20,7 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Sparkles, ArrowLeft, ArrowRight } from 'lucide-react';
 
-const ONBOARDING_STORAGE_KEY = 'thrissur-home-joy-onboarding';
+const ONBOARDING_STORAGE_KEY = 'buildly-onboarding'; // Updated storage key
 
 // Dynamically create Zod schema from onboardingSteps
 const generateSchema = (steps: OnboardingStep[]) => {

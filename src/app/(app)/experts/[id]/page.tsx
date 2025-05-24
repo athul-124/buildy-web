@@ -37,7 +37,7 @@ export default async function ExpertDetailPage({ params }: { params: { id: strin
   }
 
   const whatsAppMessage = expert.contact.whatsapp 
-    ? encodeURIComponent(`Hi ${expert.name}, I found you on Thrissur Home Joy and I'd like to request a consultation for ${expert.specialty} services.`)
+    ? encodeURIComponent(`Hi ${expert.name}, I found you on Buildly and I'd like to request a consultation for ${expert.specialty} services.`)
     : '';
   const whatsAppUrl = expert.contact.whatsapp 
     ? `https://wa.me/${expert.contact.whatsapp.replace(/\D/g, '')}?text=${whatsAppMessage}`

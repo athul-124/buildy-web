@@ -59,7 +59,7 @@ export function ConsultationModal({ expert, triggerButton }: ConsultationModalPr
     // Pre-fill WhatsApp message if expert has WhatsApp
     if (expert.contact.whatsapp) {
       const message = encodeURIComponent(
-        `Hi ${expert.name}, I just booked a consultation via Thrissur Home Joy for ${expert.specialty} services.\nMy details:\nName: ${name}\nPhone: ${phone}\nPreferred Date: ${bookingDetails.preferredDate}\nPreferred Time: ${time}${notes ? `\nNotes: ${notes}` : ''}`
+        `Hi ${expert.name}, I just booked a consultation via Buildly for ${expert.specialty} services.\nMy details:\nName: ${name}\nPhone: ${phone}\nPreferred Date: ${bookingDetails.preferredDate}\nPreferred Time: ${time}${notes ? `\nNotes: ${notes}` : ''}`
       );
       const whatsappUrl = `https://wa.me/${expert.contact.whatsapp.replace(/\D/g, '')}?text=${message}`;
       // Optionally, redirect or offer to open WhatsApp

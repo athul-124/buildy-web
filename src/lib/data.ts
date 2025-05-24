@@ -147,7 +147,7 @@ export const onboardingSteps: OnboardingStep[] = [
   {
     id: 'step1',
     icon: MessageSquareHeart,
-    title: "Welcome to Thrissur Home Joy!",
+    title: "Welcome to Buildly!",
     description: "Let's find the perfect expert for your home needs. What kind of service are you looking for today?",
     question: "Select a service category:",
     inputType: 'radio',
@@ -204,3 +204,11 @@ export const getExpertsBySpecialty = (specialty: string): Expert[] => mockExpert
 // Function to get a service by ID
 export const getServiceById = (id: string): Service | undefined => mockServices.find(service => service.id === id);
 
+// Function to get all tags from experts
+export const getAllExpertTags = (): string[] => {
+  const allTags = new Set<string>();
+  mockExperts.forEach(expert => {
+    expert.tags?.forEach(tag => allTags.add(tag));
+  });
+  return Array.from(allTags);
+};

@@ -9,7 +9,7 @@ const geistSans = GeistSans; // Direct assignment
 const geistMono = GeistMono; // Direct assignment
 
 export const metadata: Metadata = {
-  title: 'Thrissur Home Joy - Your Trusted Home Service Experts',
+  title: 'Buildly - Your Trusted Home Service Experts',
   description: 'Connect with vetted home service experts in Thrissur. Transparent pricing, instant consultations, and AI-powered scheduling.',
 };
 

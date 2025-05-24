@@ -45,7 +45,7 @@ export default function HomePage() {
                <MessageSquareHeart className="h-24 w-24 text-primary animate-pulse" />
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-foreground mb-6">
-              Welcome to <span className="text-primary">Thrissur Home Joy</span>
+              Welcome to <span className="text-primary">Buildly</span>
             </h1>
             <p className="max-w-2xl mx-auto text-lg sm:text-xl text-muted-foreground mb-10">
               Your trusted partner for all home service needs in Thrissur. Connect with skilled professionals, get transparent pricing, and enjoy peace of mind.
@@ -69,7 +69,7 @@ export default function HomePage() {
         <section className="py-16 bg-background">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-center text-foreground mb-12">
-              How <span className="text-primary">Thrissur Home Joy</span> Works
+              How <span className="text-primary">Buildly</span> Works
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
               <Card className="shadow-md hover:shadow-lg transition-shadow duration-300">
@@ -141,7 +141,7 @@ export default function HomePage() {
               <Card className="shadow-md">
                 <CardContent className="pt-6">
                   <blockquote className="text-muted-foreground">
-                    "Finding a reliable plumber in Thrissur was always a hassle. Thrissur Home Joy made it so easy! Professional service and fair pricing. Highly recommend."
+                    "Finding a reliable plumber in Thrissur was always a hassle. Buildly made it so easy! Professional service and fair pricing. Highly recommend."
                   </blockquote>
                   <div className="mt-4 flex items-center">
                     <Image data-ai-hint="person portrait" src="https://placehold.co/40x40.png" alt="User Maya R." width={40} height={40} className="rounded-full" />

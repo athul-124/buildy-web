@@ -1,7 +1,7 @@
 import { AdminSchedulerForm } from '@/components/AdminSchedulerForm';
 
 export const metadata = {
-  title: "AI Contractor Scheduler | Thrissur Home Joy Admin",
+  title: "AI Contractor Scheduler | Buildly Admin",
 };
 
 export default function AdminSchedulerPage() {
