@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -10,8 +11,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
-import { scheduleContractor, ScheduleContractorInput, ScheduleContractorOutput } from '@/ai/flows/schedule-contractors'; // Ensure correct path
+import { Loader2, CheckCircle, AlertTriangle, Info } from 'lucide-react';
+import { scheduleContractor, ScheduleContractorInput, ScheduleContractorOutput } from '@/ai/flows/schedule-contractors'; 
 
 const formSchema = z.object({
   userDetails: z.string().min(10, "User details must be at least 10 characters."),
@@ -39,10 +40,10 @@ export function AdminSchedulerForm() {
       setResult(response);
       toast({
         title: "Scheduling Successful!",
-        description: `Contractor ${response.contractorAssigned} has been scheduled.`,
+        description: `Contractor ${response.contractorAssigned} has been scheduled. Confidence: ${(response.confidenceScore * 100).toFixed(0)}%`,
         action: <CheckCircle className="text-green-500" />,
       });
-      reset(); // Reset form fields
+      reset(); 
     } catch (error) {
       console.error("Scheduling failed:", error);
       const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
@@ -115,15 +116,24 @@ export function AdminSchedulerForm() {
             )}
           </Button>
           {result && (
-            <Card className="bg-green-50 border-green-300 p-4 shadow-sm">
-              <CardHeader className="p-0 mb-2">
+            <Card className="bg-green-50 border-green-300 p-4 shadow-sm mt-4">
+              <CardHeader className="p-0 mb-3">
                  <CardTitle className="text-lg text-green-700 flex items-center">
                     <CheckCircle className="mr-2 h-5 w-5"/> Scheduling Confirmed!
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-0 text-sm">
+              <CardContent className="p-0 text-sm space-y-2">
                 <p className="text-green-600"><strong className="text-green-700">Contractor Assigned:</strong> {result.contractorAssigned}</p>
                 <p className="text-green-600"><strong className="text-green-700">Confirmation:</strong> {result.confirmation}</p>
+                <div className="mt-2 pt-2 border-t border-green-200">
+                    <p className="text-xs text-green-700/80 flex items-start">
+                        <Info size={14} className="mr-2 mt-0.5 shrink-0"/>
+                        <span>
+                            <strong className="block">AI Reasoning:</strong> {result.reasoning}
+                            <strong className="block mt-1">Confidence:</strong> {(result.confidenceScore * 100).toFixed(0)}%
+                        </span>
+                    </p>
+                </div>
               </CardContent>
             </Card>
           )}

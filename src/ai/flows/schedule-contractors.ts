@@ -1,4 +1,5 @@
-// use server'
+
+'use server';
 
 /**
  * @fileOverview An AI-powered scheduling tool that automatically books contractors for appointments.
@@ -31,6 +32,14 @@ const ScheduleContractorOutputSchema = z.object({
   contractorAssigned: z
     .string()
     .describe('The name of the contractor assigned to the job.'),
+  confidenceScore: z
+    .number()
+    .min(0)
+    .max(1)
+    .describe('A score from 0.0 to 1.0 indicating the confidence in the scheduled appointment.'),
+  reasoning: z
+    .string()
+    .describe('A brief explanation of why this particular schedule and contractor were chosen.'),
 });
 export type ScheduleContractorOutput = z.infer<typeof ScheduleContractorOutputSchema>;
 
@@ -44,14 +53,13 @@ const prompt = ai.definePrompt({
   output: {schema: ScheduleContractorOutputSchema},
   prompt: `You are an AI assistant scheduling tool that books contractors for appointments.
 
-  Given the user details, contractor details, and appointment preferences, schedule the appointment and respond with a confirmation message.
+  Given the user details, contractor details, and appointment preferences, schedule the appointment.
+  Your response MUST include a confirmation message, the assigned contractor, a confidence score (a number between 0.0 and 1.0) for your proposed schedule, and a brief reasoning for your choice based on the provided inputs.
 
   User Details: {{{userDetails}}}
   Contractor Details: {{{contractorDetails}}}
   Appointment Preferences: {{{appointmentPreferences}}}
-
-  Confirmation: {confirmation}
-  Contractor Assigned: {contractorAssigned}`,
+  `,
 });
 
 const scheduleContractorFlow = ai.defineFlow(
@@ -62,6 +70,14 @@ const scheduleContractorFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    if (!output) {
+      throw new Error('AI scheduling failed to produce an output.');
+    }
+    // Ensure confidenceScore is a number, default to 0 if not present or NaN
+    if (typeof output.confidenceScore !== 'number' || isNaN(output.confidenceScore)) {
+        console.warn('Confidence score was not a number, defaulting to 0.')
+        output.confidenceScore = 0;
+    }
+    return output;
   }
 );

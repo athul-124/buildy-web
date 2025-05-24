@@ -9,6 +9,7 @@ export interface Expert {
   projectPhotos: { id: string, url: string, caption: string, dataAiHint: string }[];
   bio: string;
   servicesOffered: string[];
+  tags?: string[]; // Added for tag-based filtering
   availability?: string; // Could be more complex, e.g., array of time slots
   contact: {
     phone?: string;
@@ -61,3 +62,4 @@ export interface OnboardingData {
   urgency?: 'low' | 'medium' | 'high';
   [key: string]: any; // For additional dynamic fields
 }
+

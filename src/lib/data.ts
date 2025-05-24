@@ -1,3 +1,4 @@
+
 import type { Expert, Service, MaterialTip, OnboardingStep } from '@/types';
 import { Wrench, Zap, Droplets, HomeIcon, Lightbulb, ShieldCheck, MessageSquareHeart, MapPin, CheckCircle, Edit3 } from 'lucide-react'; // Added HomeIcon
 
@@ -15,6 +16,7 @@ export const mockExperts: Expert[] = [
     ],
     bio: 'Experienced electrician with 10+ years in residential and commercial projects. Specialized in safe and efficient electrical solutions.',
     servicesOffered: ['Wiring', 'Fixture Installation', 'Appliance Repair', 'Inverter Setup', 'Panel Upgrades'],
+    tags: ['Fast Response', 'Commercial Projects', 'Safety Certified'],
     availability: 'Mon-Sat, 9 AM - 6 PM',
     contact: { phone: '98XXXXXX01', whatsapp: '9198XXXXXX01' },
     location: "Thrissur Town",
@@ -32,6 +34,7 @@ export const mockExperts: Expert[] = [
     ],
     bio: 'Certified plumber focusing on quality workmanship and customer satisfaction. Expertise in leak detection and modern plumbing systems.',
     servicesOffered: ['Leak Repair', 'Pipe Installation', 'Sanitary Ware Fitting', 'Water Tank Cleaning', 'Blocked Drain Clearing'],
+    tags: ['Eco-Friendly Solutions', '24/7 Emergency', 'Modern Bathrooms'],
     availability: 'Mon-Fri, 10 AM - 7 PM',
     contact: { phone: '97XXXXXX02', whatsapp: '9197XXXXXX02' },
     location: "Ollur, Thrissur",
@@ -49,6 +52,7 @@ export const mockExperts: Expert[] = [
     ],
     bio: 'Skilled carpenter creating custom furniture and wooden fixtures. Passionate about precision and durable designs.',
     servicesOffered: ['Custom Furniture', 'Door & Window Fitting', 'Repair Work', 'Polishing', 'Modular Kitchens'],
+    tags: ['Budget Friendly', 'Custom Designs', 'Antique Restoration'],
     availability: 'Tue-Sun, 8 AM - 5 PM',
     contact: { phone: '96XXXXXX03', whatsapp: '9196XXXXXX03' },
     location: "Poonkunnam, Thrissur",
@@ -199,3 +203,4 @@ export const getExpertsBySpecialty = (specialty: string): Expert[] => mockExpert
 
 // Function to get a service by ID
 export const getServiceById = (id: string): Service | undefined => mockServices.find(service => service.id === id);
+

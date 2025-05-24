@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, type FormEvent } from 'react';
@@ -30,7 +31,6 @@ export function ConsultationModal({ expert, triggerButton }: ConsultationModalPr
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    // Basic validation
     if (!name || !phone || !date || !time) {
       toast({
         title: "Missing Information",
@@ -40,15 +40,34 @@ export function ConsultationModal({ expert, triggerButton }: ConsultationModalPr
       return;
     }
 
-    console.log('Booking consultation:', { expertId: expert.id, name, phone, date, time, notes });
+    const bookingDetails = {
+      expertId: expert.id,
+      expertName: expert.name,
+      userName: name,
+      userPhone: phone,
+      preferredDate: date ? format(date, "PPP") : 'Not specified',
+      preferredTime: time,
+      notes,
+    };
+    console.log('Booking consultation:', bookingDetails);
+    
     toast({
       title: "Consultation Requested!",
       description: `We've sent your request to ${expert.name}. They will contact you shortly.`,
     });
-    // Here you would typically send this data to your backend
-    // And potentially integrate with WhatsApp for confirmation
+
+    // Pre-fill WhatsApp message if expert has WhatsApp
+    if (expert.contact.whatsapp) {
+      const message = encodeURIComponent(
+        `Hi ${expert.name}, I just booked a consultation via Thrissur Home Joy for ${expert.specialty} services.\nMy details:\nName: ${name}\nPhone: ${phone}\nPreferred Date: ${bookingDetails.preferredDate}\nPreferred Time: ${time}${notes ? `\nNotes: ${notes}` : ''}`
+      );
+      const whatsappUrl = `https://wa.me/${expert.contact.whatsapp.replace(/\D/g, '')}?text=${message}`;
+      // Optionally, redirect or offer to open WhatsApp
+      // window.open(whatsappUrl, '_blank');
+      console.log("WhatsApp URL for confirmation (optional):", whatsappUrl);
+    }
+
     setIsOpen(false); 
-    // Reset form (optional)
     setName(''); setPhone(''); setDate(new Date()); setTime(''); setNotes('');
   };
 

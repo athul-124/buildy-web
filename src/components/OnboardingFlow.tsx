@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { OnboardingData, OnboardingStep } from '@/types';
@@ -18,6 +19,8 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Sparkles, ArrowLeft, ArrowRight } from 'lucide-react';
+
+const ONBOARDING_STORAGE_KEY = 'thrissur-home-joy-onboarding';
 
 // Dynamically create Zod schema from onboardingSteps
 const generateSchema = (steps: OnboardingStep[]) => {
@@ -40,10 +43,38 @@ export function OnboardingFlow() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
-  const { control, handleSubmit, trigger, getValues, setValue, formState: { errors, touchedFields }, watch } = useForm<OnboardingData>({
+  const { control, handleSubmit, trigger, getValues, setValue, formState: { errors }, watch, reset } = useForm<OnboardingData>({
     resolver: zodResolver(onboardingSchema),
-    mode: 'onChange', // Validate on change for better UX
+    mode: 'onChange', 
   });
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const savedDataString = localStorage.getItem(ONBOARDING_STORAGE_KEY);
+    if (savedDataString) {
+      try {
+        const savedData = JSON.parse(savedDataString);
+        // Check if it's a partial or complete form
+        if (savedData && typeof savedData === 'object') {
+           // Check if it is an old submission or an in-progress form
+           if (!savedData.submitted) {
+            Object.keys(savedData).forEach(key => {
+              // Only set value if it's part of the schema to avoid errors
+              if (key in onboardingSchema.shape) {
+                setValue(key as keyof OnboardingData, savedData[key], { shouldValidate: true });
+              }
+            });
+          } else {
+            // Clear stale submitted data
+            localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to parse onboarding data from localStorage", error);
+        localStorage.removeItem(ONBOARDING_STORAGE_KEY); // Clear corrupted data
+      }
+    }
+  }, [setValue]);
 
   // Pre-fill serviceCategory if 'service' query param exists
   useEffect(() => {
@@ -51,10 +82,22 @@ export function OnboardingFlow() {
     if (initialServiceId) {
       const serviceMap: {[key:string]: string} = { 's1': 'electrical', 's2': 'plumbing', 's3': 'carpentry', 's4': 'appliance_repair'};
       if (serviceMap[initialServiceId]) {
-         setValue('serviceCategory', serviceMap[initialServiceId]);
+         setValue('serviceCategory', serviceMap[initialServiceId], { shouldValidate: true });
       }
     }
   }, [searchParams, setValue]);
+
+  // Save to localStorage on data change
+  useEffect(() => {
+    const subscription = watch((value) => {
+      const currentData = getValues();
+      // Only save if there's actual data to prevent empty objects on initial load
+      if (Object.keys(currentData).some(key => currentData[key] !== undefined && currentData[key] !== '')) {
+        localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(currentData));
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, getValues]);
 
 
   const step = onboardingSteps[currentStep];
@@ -69,7 +112,6 @@ export function OnboardingFlow() {
         handleSubmit(onSubmit)();
       }
     } else {
-       // Focus on the first error field if validation fails
        const fieldWithError = Object.keys(errors).find(key => key === step.fieldName);
        if (fieldWithError) {
          const element = document.getElementById(step.fieldName);
@@ -91,6 +133,10 @@ export function OnboardingFlow() {
       description: "We've received your request. We'll match you with experts shortly.",
       action: <Sparkles className="text-yellow-400" />,
     });
+    // Mark as submitted and clear localStorage
+    localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify({ ...data, submitted: true }));
+    // Optional: Clear form fields after successful submission
+    // reset(); // This would clear the form. Consider if this UX is desired or if user should see their inputs.
     router.push(`/experts?serviceCategory=${data.serviceCategory}&location=${data.location}&urgency=${data.urgency}`);
   };
   

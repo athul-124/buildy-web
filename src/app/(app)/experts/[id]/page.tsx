@@ -1,3 +1,4 @@
+
 import { getExpertById, mockExperts } from '@/lib/data';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -15,8 +16,6 @@ async function getExpertDetails(id: string) {
   await new Promise(resolve => setTimeout(resolve, 50));
   const expert = getExpertById(id);
   if (!expert) {
-    // For a real app, you might fetch related experts or show a custom "not found" UI
-    // For now, we use Next.js notFound utility
     return null; 
   }
   return expert;
@@ -24,7 +23,6 @@ async function getExpertDetails(id: string) {
 
 
 export async function generateStaticParams() {
-  // In a real app, fetch all expert IDs from your database
   return mockExperts.map(expert => ({
     id: expert.id,
   }));
@@ -35,8 +33,16 @@ export default async function ExpertDetailPage({ params }: { params: { id: strin
   const expert = await getExpertDetails(params.id);
 
   if (!expert) {
-    notFound(); // This will render the nearest not-found.js file or a default Next.js 404 page
+    notFound(); 
   }
+
+  const whatsAppMessage = expert.contact.whatsapp 
+    ? encodeURIComponent(`Hi ${expert.name}, I found you on Thrissur Home Joy and I'd like to request a consultation for ${expert.specialty} services.`)
+    : '';
+  const whatsAppUrl = expert.contact.whatsapp 
+    ? `https://wa.me/${expert.contact.whatsapp.replace(/\D/g, '')}?text=${whatsAppMessage}`
+    : '#';
+
 
   return (
     <div className="space-y-8">
@@ -97,6 +103,17 @@ export default async function ExpertDetailPage({ params }: { params: { id: strin
                   </li>
                 ))}
               </ul>
+               {expert.tags && expert.tags.length > 0 && (
+                <>
+                  <Separator className="my-4" />
+                  <h3 className="text-sm font-semibold text-muted-foreground mb-2">Tags</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {expert.tags.map(tag => (
+                      <Badge key={tag} variant="secondary">{tag}</Badge>
+                    ))}
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
 
@@ -148,7 +165,7 @@ export default async function ExpertDetailPage({ params }: { params: { id: strin
               {expert.contact.whatsapp && (
                 <div className="flex items-center">
                   <MessageSquare className="h-5 w-5 text-muted-foreground mr-3" />
-                  <a href={`https://wa.me/${expert.contact.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary">Chat on WhatsApp</a>
+                  <a href={whatsAppUrl} target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-primary">Chat on WhatsApp</a>
                 </div>
               )}
               {expert.location && (
@@ -173,7 +190,7 @@ export default async function ExpertDetailPage({ params }: { params: { id: strin
               }/>
               {expert.contact.whatsapp && (
                  <Button variant="outline" size="lg" className="w-full" asChild>
-                    <a href={`https://wa.me/${expert.contact.whatsapp.replace(/\D/g, '')}?text=Hi%20${expert.name},%20I'd%20like%20to%20request%20a%20consultation.`} target="_blank" rel="noopener noreferrer">
+                    <a href={whatsAppUrl} target="_blank" rel="noopener noreferrer">
                         Confirm via WhatsApp
                     </a>
                  </Button>
