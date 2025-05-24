@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle, AlertTriangle, Info } from 'lucide-react';
+import { Loader2, CheckCircle, AlertTriangle, Info, Sparkles } from 'lucide-react'; // Added Sparkles
 import { scheduleContractor, ScheduleContractorInput, ScheduleContractorOutput } from '@/ai/flows/schedule-contractors'; 
 
 const formSchema = z.object({
@@ -39,19 +39,19 @@ export function AdminSchedulerForm() {
       const response = await scheduleContractor(scheduleInput);
       setResult(response);
       toast({
-        title: "Scheduling Successful!",
-        description: `Contractor ${response.contractorAssigned} has been scheduled. Confidence: ${(response.confidenceScore * 100).toFixed(0)}%`,
-        action: <CheckCircle className="text-green-500" />,
+        title: "Scheduling Suggestion Ready!",
+        description: `AI has proposed a schedule for ${response.contractorAssigned}. Confidence: ${(response.confidenceScore * 100).toFixed(0)}%`,
+        action: <Sparkles className="text-yellow-400" />, // Using Sparkles for AI success
       });
-      reset(); 
+      // reset(); // Commented out to allow admin to review and re-submit if needed
     } catch (error) {
-      console.error("Scheduling failed:", error);
+      console.error("AI Scheduling failed:", error);
       const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
       toast({
-        title: "Scheduling Failed",
-        description: `Could not schedule contractor. ${errorMessage}`,
+        title: "AI Scheduling Issue",
+        description: `The AI couldn't complete the schedule. ${errorMessage} Please review inputs or try manual scheduling.`,
         variant: "destructive",
-        action: <AlertTriangle className="text-white" />
+        action: <AlertTriangle className="text-destructive-foreground" />
       });
     } finally {
       setIsLoading(false);
@@ -62,7 +62,7 @@ export function AdminSchedulerForm() {
     <Card className="w-full max-w-2xl mx-auto shadow-xl border-border">
       <CardHeader>
         <CardTitle className="text-2xl text-foreground">AI-Powered Contractor Scheduler</CardTitle>
-        <CardDescription className="text-muted-foreground">
+        <CardDescription> {/* Removed text-muted-foreground to allow default paragraph styling */}
           Enter user details, contractor availability, and appointment preferences. Our AI will find the best slot.
         </CardDescription>
       </CardHeader>
@@ -75,7 +75,7 @@ export function AdminSchedulerForm() {
               {...register("userDetails")}
               placeholder="e.g., John Doe, 123 Main St, needs plumbing for leaky faucet. Prefers mornings. Has a dog."
               rows={4}
-              className={errors.userDetails ? "border-destructive focus-visible:ring-destructive" : "focus-visible:ring-primary"}
+              className={errors.userDetails ? "border-destructive focus-visible:ring-destructive" : ""}
             />
             {errors.userDetails && <p className="text-sm text-destructive">{errors.userDetails.message}</p>}
           </div>
@@ -87,7 +87,7 @@ export function AdminSchedulerForm() {
               {...register("contractorDetails")}
               placeholder="e.g., Plumber Pete, available Mon-Fri 9am-5pm, except Wed afternoon. Skills: leak repair, pipe installation. Avoids houses with cats."
               rows={4}
-              className={errors.contractorDetails ? "border-destructive focus-visible:ring-destructive" : "focus-visible:ring-primary"}
+              className={errors.contractorDetails ? "border-destructive focus-visible:ring-destructive" : ""}
             />
             {errors.contractorDetails && <p className="text-sm text-destructive">{errors.contractorDetails.message}</p>}
           </div>
@@ -99,34 +99,34 @@ export function AdminSchedulerForm() {
               {...register("appointmentPreferences")}
               placeholder="e.g., Schedule for next week, ideally Tuesday or Thursday morning. Appointment duration approx 2 hours."
               rows={3}
-              className={errors.appointmentPreferences ? "border-destructive focus-visible:ring-destructive" : "focus-visible:ring-primary"}
+              className={errors.appointmentPreferences ? "border-destructive focus-visible:ring-destructive" : ""}
             />
             {errors.appointmentPreferences && <p className="text-sm text-destructive">{errors.appointmentPreferences.message}</p>}
           </div>
         </CardContent>
         <CardFooter className="flex flex-col items-stretch gap-4 pt-6 border-t border-border">
-          <Button type="submit" disabled={isLoading} className="w-full text-base py-3 h-auto bg-primary hover:bg-primary/90 text-primary-foreground">
+          <Button type="submit" disabled={isLoading} className="w-full text-base py-3 h-auto"> {/* Removed explicit bg-primary, relies on default variant */}
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Scheduling...
+                Thinking...
               </>
             ) : (
-              "Schedule with AI"
+              "Get AI Scheduling Suggestion"
             )}
           </Button>
           {result && (
-            <Card className="bg-green-50 border-green-300 p-4 shadow-sm mt-4">
+            <Card className="bg-primary/10 border-primary/30 p-4 shadow-sm mt-4"> {/* Changed to use primary for positive AI result */}
               <CardHeader className="p-0 mb-3">
-                 <CardTitle className="text-lg text-green-700 flex items-center">
-                    <CheckCircle className="mr-2 h-5 w-5"/> Scheduling Confirmed!
+                 <CardTitle className="text-lg text-primary flex items-center">
+                    <Sparkles className="mr-2 h-5 w-5"/> AI Suggestion Received!
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0 text-sm space-y-2">
-                <p className="text-green-600"><strong className="text-green-700">Contractor Assigned:</strong> {result.contractorAssigned}</p>
-                <p className="text-green-600"><strong className="text-green-700">Confirmation:</strong> {result.confirmation}</p>
-                <div className="mt-2 pt-2 border-t border-green-200">
-                    <p className="text-xs text-green-700/80 flex items-start">
+                <p className="text-primary/90"><strong className="text-primary">Contractor Suggested:</strong> {result.contractorAssigned}</p>
+                <p className="text-primary/90"><strong className="text-primary">Proposed Schedule:</strong> {result.confirmation}</p>
+                <div className="mt-2 pt-2 border-t border-primary/20">
+                    <p className="text-xs text-primary/80 flex items-start">
                         <Info size={14} className="mr-2 mt-0.5 shrink-0"/>
                         <span>
                             <strong className="block">AI Reasoning:</strong> {result.reasoning}

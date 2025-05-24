@@ -20,7 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Sparkles, ArrowLeft, ArrowRight } from 'lucide-react';
 
-const ONBOARDING_STORAGE_KEY = 'buildly-onboarding'; // Updated storage key
+const ONBOARDING_STORAGE_KEY = 'buildly-onboarding'; 
 
 // Dynamically create Zod schema from onboardingSteps
 const generateSchema = (steps: OnboardingStep[]) => {
@@ -48,35 +48,29 @@ export function OnboardingFlow() {
     mode: 'onChange', 
   });
 
-  // Load from localStorage on mount
   useEffect(() => {
     const savedDataString = localStorage.getItem(ONBOARDING_STORAGE_KEY);
     if (savedDataString) {
       try {
         const savedData = JSON.parse(savedDataString);
-        // Check if it's a partial or complete form
         if (savedData && typeof savedData === 'object') {
-           // Check if it is an old submission or an in-progress form
            if (!savedData.submitted) {
             Object.keys(savedData).forEach(key => {
-              // Only set value if it's part of the schema to avoid errors
               if (key in onboardingSchema.shape) {
                 setValue(key as keyof OnboardingData, savedData[key], { shouldValidate: true });
               }
             });
           } else {
-            // Clear stale submitted data
             localStorage.removeItem(ONBOARDING_STORAGE_KEY);
           }
         }
       } catch (error) {
         console.error("Failed to parse onboarding data from localStorage", error);
-        localStorage.removeItem(ONBOARDING_STORAGE_KEY); // Clear corrupted data
+        localStorage.removeItem(ONBOARDING_STORAGE_KEY); 
       }
     }
   }, [setValue]);
 
-  // Pre-fill serviceCategory if 'service' query param exists
   useEffect(() => {
     const initialServiceId = searchParams.get('service');
     if (initialServiceId) {
@@ -87,11 +81,9 @@ export function OnboardingFlow() {
     }
   }, [searchParams, setValue]);
 
-  // Save to localStorage on data change
   useEffect(() => {
     const subscription = watch((value) => {
       const currentData = getValues();
-      // Only save if there's actual data to prevent empty objects on initial load
       if (Object.keys(currentData).some(key => currentData[key] !== undefined && currentData[key] !== '')) {
         localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(currentData));
       }
@@ -129,14 +121,11 @@ export function OnboardingFlow() {
   const onSubmit: SubmitHandler<OnboardingData> = (data) => {
     console.log('Onboarding data submitted:', data);
     toast({
-      title: "Thank you!",
-      description: "We've received your request. We'll match you with experts shortly.",
-      action: <Sparkles className="text-yellow-400" />,
+      title: "Fantastic! We're on it!",
+      description: "Your request is being processed. We'll connect you with the best experts for the job.",
+      action: <Sparkles className="text-primary" />, // primary is now green
     });
-    // Mark as submitted and clear localStorage
     localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify({ ...data, submitted: true }));
-    // Optional: Clear form fields after successful submission
-    // reset(); // This would clear the form. Consider if this UX is desired or if user should see their inputs.
     router.push(`/experts?serviceCategory=${data.serviceCategory}&location=${data.location}&urgency=${data.urgency}`);
   };
   
@@ -161,7 +150,7 @@ export function OnboardingFlow() {
                       htmlFor={`${fieldName}-${option.value}`}
                       className={cn(
                         "flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 sm:p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer transition-all",
-                        field.value === option.value && "border-primary ring-2 ring-primary shadow-md",
+                        field.value === option.value && "border-primary ring-2 ring-primary shadow-md", // primary is green
                         errors[fieldName] && "border-destructive"
                       )}
                       aria-describedby={`${fieldName}-error`}
@@ -219,7 +208,7 @@ export function OnboardingFlow() {
         <Button variant="outline" onClick={handlePrevious} disabled={currentStep === 0} className="text-base py-2.5 px-5">
           <ArrowLeft className="mr-2 h-4 w-4" /> Previous
         </Button>
-        <Button onClick={handleNext} className="text-base py-2.5 px-5 bg-primary hover:bg-primary/90 text-primary-foreground">
+        <Button onClick={handleNext} className="text-base py-2.5 px-5"> {/* Will use default (Kerala Green) */}
           {currentStep === onboardingSteps.length - 1 ? 'Submit & Find Experts' : 'Next'}
           {currentStep < onboardingSteps.length -1 && <ArrowRight className="ml-2 h-4 w-4" />}
         </Button>

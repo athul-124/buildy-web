@@ -1,3 +1,4 @@
+
 import type { Service } from '@/types';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -39,7 +40,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
       </CardHeader>
       <CardContent className="flex-grow space-y-3">
         <div className="flex items-baseline gap-2">
-          <Tag size={18} className="text-primary" />
+          <Tag size={18} className="text-primary" /> {/* primary is green */}
           <p className="text-2xl font-bold text-foreground">
             ₹{service.basePrice.toLocaleString()}
             {service.priceRange && ` - ₹${service.priceRange.max.toLocaleString()}`}
@@ -47,7 +48,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
         </div>
         {service.expertsAvailable !== undefined && (
           <div className="flex items-center text-sm text-muted-foreground">
-            <Users size={16} className="mr-2 text-primary" />
+            <Users size={16} className="mr-2 text-primary" /> {/* primary is green */}
             <span>{service.expertsAvailable} Experts Available</span>
           </div>
         )}
@@ -55,7 +56,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
         {service.priceExplanation && (
           <Accordion type="single" collapsible className="w-full text-sm">
             <AccordionItem value="item-1" className="border-b-0">
-              <AccordionTrigger className="py-2 text-primary hover:no-underline [&[data-state=open]>svg]:text-primary">
+              <AccordionTrigger className="py-2 text-primary hover:no-underline [&[data-state=open]>svg]:text-primary"> {/* primary is green */}
                 <Info size={16} className="mr-1 inline"/> Why this cost?
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground pt-1 pb-0">
@@ -66,7 +67,7 @@ export function ServiceCard({ service }: ServiceCardProps) {
         )}
       </CardContent>
       <CardFooter className="p-4 bg-muted/30 border-t">
-        <Button asChild className="w-full">
+        <Button asChild className="w-full"> {/* Default variant: Kerala Green */}
           <Link href={`/onboarding?service=${service.id}`}>Book This Service</Link>
         </Button>
       </CardFooter>

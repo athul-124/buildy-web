@@ -10,9 +10,7 @@ import { ConsultationModal } from '@/components/ConsultationModal';
 import { RatingDisplay } from '@/components/RatingDisplay';
 import { Separator } from '@/components/ui/separator';
 
-// This would typically come from an API call
 async function getExpertDetails(id: string) {
-  // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 50));
   const expert = getExpertById(id);
   if (!expert) {
@@ -21,13 +19,11 @@ async function getExpertDetails(id: string) {
   return expert;
 }
 
-
 export async function generateStaticParams() {
   return mockExperts.map(expert => ({
     id: expert.id,
   }));
 }
-
 
 export default async function ExpertDetailPage({ params }: { params: { id: string } }) {
   const expert = await getExpertDetails(params.id);
@@ -43,10 +39,8 @@ export default async function ExpertDetailPage({ params }: { params: { id: strin
     ? `https://wa.me/${expert.contact.whatsapp.replace(/\D/g, '')}?text=${whatsAppMessage}`
     : '#';
 
-
   return (
     <div className="space-y-8">
-      {/* Header Section */}
       <section className="relative rounded-lg overflow-hidden shadow-lg">
         <Image
           src={expert.projectPhotos.length > 0 ? expert.projectPhotos[0].url : "https://placehold.co/1200x400.png"}
@@ -71,7 +65,7 @@ export default async function ExpertDetailPage({ params }: { params: { id: strin
             )}
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-white">{expert.name}</h1>
-              <p className="text-xl text-primary-foreground/90">{expert.specialty}</p>
+              <p className="text-xl text-primary-foreground/90">{expert.specialty}</p> {/* primary-foreground might need adjustment if primary bg changes */}
               <RatingDisplay rating={expert.rating} reviewCount={expert.reviewCount} showText className="mt-1 text-white" starSize={20} />
             </div>
           </div>
@@ -79,14 +73,13 @@ export default async function ExpertDetailPage({ params }: { params: { id: strin
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Content Area */}
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>About {expert.name}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground whitespace-pre-line">{expert.bio}</p>
+              <p className="whitespace-pre-line prose-p">{expert.bio}</p> {/* Use prose-p for potentially darker body text */}
             </CardContent>
           </Card>
 
@@ -98,7 +91,7 @@ export default async function ExpertDetailPage({ params }: { params: { id: strin
               <ul className="space-y-2">
                 {expert.servicesOffered.map((service) => (
                   <li key={service} className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-2" />
+                    <CheckCircle className="h-5 w-5 text-primary mr-2" /> {/* Primary is now green */}
                     <span className="text-foreground">{service}</span>
                   </li>
                 ))}
@@ -143,11 +136,10 @@ export default async function ExpertDetailPage({ params }: { params: { id: strin
           )}
         </div>
 
-        {/* Sidebar / Contact Area */}
         <div className="lg:col-span-1 space-y-6">
-          <Card className="sticky top-24 shadow-lg"> {/* Sticky for larger screens */}
-            <CardHeader className="bg-primary/10">
-              <CardTitle className="text-primary">Contact & Consultation</CardTitle>
+          <Card className="sticky top-24 shadow-lg">
+            <CardHeader className="bg-primary/10"> {/* Primary is now green */}
+              <CardTitle className="text-primary">Contact & Consultation</CardTitle> {/* Primary is now green */}
             </CardHeader>
             <CardContent className="pt-6 space-y-4">
               {expert.contact.phone && (
@@ -184,7 +176,7 @@ export default async function ExpertDetailPage({ params }: { params: { id: strin
               <Separator className="my-4" />
 
               <ConsultationModal expert={expert} triggerButton={
-                <Button size="lg" className="w-full">
+                <Button size="lg" className="w-full"> {/* Default variant will use new primary (Kerala Green) */}
                   <MessageSquare className="mr-2 h-5 w-5" /> Book Online Consultation
                 </Button>
               }/>
