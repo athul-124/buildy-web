@@ -3,7 +3,7 @@ import type { Service } from '@/types';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button'; // Import buttonVariants
 import { Badge } from '@/components/ui/badge';
 import { Info, Users, Tag } from 'lucide-react';
 import {
@@ -12,6 +12,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { cn } from '@/lib/utils'; // Import cn for class merging
 
 interface ServiceCardProps {
   service: Service;
@@ -67,9 +68,15 @@ export function ServiceCard({ service }: ServiceCardProps) {
         )}
       </CardContent>
       <CardFooter className="p-4 bg-muted/30 border-t">
-        <Button asChild className="w-full"> {/* Default variant: Kerala Green */}
-          <Link href={`/onboarding?service=${service.id}`}>Book This Service</Link>
-        </Button>
+        <Link 
+          href={`/onboarding?service=${service.id}`} 
+          legacyBehavior 
+          passHref
+        >
+          <a className={cn(buttonVariants({ variant: 'default', size: 'default' }), "w-full")}>
+            Book This Service
+          </a>
+        </Link>
       </CardFooter>
     </Card>
   );
