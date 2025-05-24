@@ -39,12 +39,12 @@ export default async function ExpertsPage({
       expert.bio.toLowerCase().includes(searchTerm)
       : true;
     const matchesSpecialty = specialtyFilter ? expert.specialty === specialtyFilter : true;
-    const matchesTag = tagFilter ? expert.tags?.includes(tagFilter) : true;
+    const matchesTag = tagFilter ? expert.tags?.includes(tagFilter) : true; // Check if expert.tags exists
     return matchesSearch && matchesSpecialty && matchesTag;
   });
 
   const specialties = Array.from(new Set(experts.map(e => e.specialty)));
-  const allTags = Array.from(new Set(experts.flatMap(e => e.tags || [])));
+  const allTags = Array.from(new Set(experts.flatMap(e => e.tags || []))); // Ensure tags is handled if undefined
 
 
   const FilterFormFields = ({ isMobile = false }: { isMobile?: boolean }) => (
@@ -64,7 +64,7 @@ export default async function ExpertsPage({
           <SelectValue placeholder="All Specialties" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All Specialties</SelectItem>
+          {/* <SelectItem value="">All Specialties</SelectItem> Removed this line */}
           {specialties.map(spec => (
             <SelectItem key={spec} value={spec}>{spec}</SelectItem>
           ))}
@@ -76,7 +76,7 @@ export default async function ExpertsPage({
           <SelectValue placeholder="All Tags" className="pl-6"/>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All Tags</SelectItem>
+          {/* <SelectItem value="">All Tags</SelectItem> Removed this line */}
           {allTags.map(tag => (
             <SelectItem key={tag} value={tag}>{tag}</SelectItem>
           ))}
