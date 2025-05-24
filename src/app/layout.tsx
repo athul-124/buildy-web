@@ -1,12 +1,22 @@
 import type { Metadata } from 'next';
-import { GeistSans } from 'geist/font/sans';
-import { GeistMono } from 'geist/font/mono';
+import { Noto_Sans_Malayalam, Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { Providers } from '@/components/Providers';
 
-const geistSans = GeistSans; // Direct assignment
-const geistMono = GeistMono; // Direct assignment
+const notoSansMalayalam = Noto_Sans_Malayalam({
+  subsets: ['malayalam', 'latin'], // Added latin for better fallback with Inter
+  weight: ['400', '500', '600', '700'], // Specify weights you'll use
+  variable: '--font-noto-sans-malayalam',
+  display: 'swap',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'], // Specify weights
+  variable: '--font-inter',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'Buildly - Your Trusted Home Service Experts',
@@ -20,7 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
+      <body className={`${notoSansMalayalam.variable} ${inter.variable} font-sans antialiased`}>
         <Providers>
           {children}
           <Toaster />

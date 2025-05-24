@@ -3,42 +3,42 @@
 @tailwind utilities;
 
 body {
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-noto-sans-malayalam), var(--font-inter), sans-serif; /* Updated font stack */
 }
 
 @layer base {
   :root {
-    --background: 0 0% 100%; /* white */
+    --background: 0 0% 100%; /* white - kept as per original PRD */
     --foreground: 224 71.4% 4.1%; /* default dark - good for text */
 
-    --card: 0 0% 100%; /* white */
+    --card: 213 33% 95%; /* Calm Slate (#f0f4f8) */
     --card-foreground: 224 71.4% 4.1%;
 
-    --popover: 0 0% 100%; /* white */
+    --popover: 213 33% 95%; /* Calm Slate (#f0f4f8) */
     --popover-foreground: 224 71.4% 4.1%;
 
-    --primary: 205 90% 65%; /* Light Blue - Calmer, slightly desaturated blue */
-    --primary-foreground: 224 71.4% 4.1%; /* Dark text for contrast on light blue */
+    --primary: 215 57% 23%; /* Trust Blue (#1a365d) */
+    --primary-foreground: 0 0% 98%; /* White for contrast on dark blue */
 
-    --secondary: 140 65% 88%; /* Pastel Green - very light */
-    --secondary-foreground: 140 25% 25%; /* Darker green text for contrast */
+    --secondary: 213 33% 95%; /* Calm Slate (#f0f4f8) - used for secondary elements that need to be very light */
+    --secondary-foreground: 224 71.4% 4.1%; /* Dark text for contrast */
 
-    --muted: 210 40% 96.1%; /* default light gray */
-    --muted-foreground: 215 27.9% 52.9%; /* default medium gray */
+    --muted: 213 33% 92%; /* Slightly darker Calm Slate for muted backgrounds */
+    --muted-foreground: 215 30% 40%; /* Darker gray for good contrast */
 
-    --accent: 160 70% 80%; /* A slightly different pastel - light aqua/mint */
-    --accent-foreground: 160 30% 25%; /* Darker text for contrast */
+    --accent: 152 49% 40%; /* Kerala Green (#38a169) */
+    --accent-foreground: 0 0% 98%; /* White for contrast */
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 63% 48%; /* Emergency Red (#c53030) */
     --destructive-foreground: 0 0% 98%;
 
-    --border: 210 30% 90%; /* Lightened border */
-    --input: 210 30% 93%; /* Lightened input */
-    --ring: 205 90% 55%; /* Ring color related to primary */
+    --border: 210 30% 85%; /* Adjusted border */
+    --input: 210 30% 90%;  /* Adjusted input */
+    --ring: 215 57% 45%;   /* Ring color related to new primary */
 
     --radius: 0.5rem;
 
-    /* Specific sidebar theming from original, can be adjusted if needed */
+    /* Sidebar theming - kept separate as it might be intentionally different */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -56,35 +56,35 @@ body {
   }
 
   .dark {
-    --background: 224 71.4% 4.1%;
-    --foreground: 0 0% 98%;
+    --background: 224 71.4% 4.1%; /* Default dark */
+    --foreground: 0 0% 98%; /* White */
 
-    --card: 224 71.4% 4.1%;
+    --card: 215 57% 18%; /* Darker shade of Trust Blue for cards */
     --card-foreground: 0 0% 98%;
 
-    --popover: 224 71.4% 4.1%;
+    --popover: 215 57% 18%; /* Darker shade of Trust Blue for popovers */
     --popover-foreground: 0 0% 98%;
 
-    --primary: 205 80% 70%; /* Brighter blue for dark mode */
-    --primary-foreground: 224 71.4% 4.1%;
+    --primary: 215 57% 50%; /* Brighter Trust Blue for dark mode */
+    --primary-foreground: 0 0% 98%; 
 
-    --secondary: 140 50% 40%; /* Darker pastel green for dark mode */
-    --secondary-foreground: 140 70% 90%; /* Lighter green text */
+    --secondary: 215 20% 25%; /* Darker Slate for dark mode secondary */
+    --secondary-foreground: 213 33% 80%; 
 
-    --muted: 215 27.9% 16.9%;
+    --muted: 215 20% 15%; /* Darker Slate for dark mode muted */
     --muted-foreground: 215 25% 65.1%;
 
-    --accent: 160 60% 50%; /* Darker accent for dark mode */
-    --accent-foreground: 160 80% 95%; /* Lighter text */
+    --accent: 152 49% 60%; /* Brighter Kerala Green for dark mode */
+    --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 63% 60%; /* Brighter Emergency Red for dark mode */
     --destructive-foreground: 0 0% 98%;
 
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 205 80% 60%;
+    --border: 215 20% 20%;
+    --input: 215 20% 20%;
+    --ring: 215 57% 55%;
 
-    /* Specific dark sidebar theming from original */
+    /* Specific dark sidebar theming - kept separate */
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -102,7 +102,7 @@ body {
   }
   body {
     @apply bg-background text-foreground;
-    @apply antialiased; /* Ensure antialiasing from layout.tsx is effective */
+    @apply antialiased; 
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;
