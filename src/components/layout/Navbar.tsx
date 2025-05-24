@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { Home, Users, Wrench, Info, MessageCircle, Sparkles, Building2, Menu } from 'lucide-react'; // Added Menu back
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'; // Added SheetHeader, SheetTitle
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import * as React from 'react';
@@ -41,7 +41,7 @@ export function Navbar() {
                 variant={link.isPrimary ? "default" : "ghost"} // "default" will be Kerala Green
                 asChild
                 className={cn(
-                  pathname === link.href && !link.isPrimary && "bg-accent text-accent-foreground", // accent is Trust Blue
+                  pathname === link.href && !link.isPrimary && "bg-accent text-accent-foreground", // accent is Deep Teal
                 )}
               >
                 <Link href={link.href}>
@@ -62,11 +62,16 @@ export function Navbar() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-full max-w-xs bg-background p-6">
+              <SheetHeader className="mb-6 text-left"> {/* Added SheetHeader */}
+                <SheetTitle> {/* Added SheetTitle */}
+                  <Link href="/" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
+                    <MessageCircle className="h-8 w-8 text-primary" /> 
+                    <span className="text-xl font-bold text-foreground">Buildly</span>
+                  </Link>
+                </SheetTitle>
+                {/* You can add a SheetDescription here if needed */}
+              </SheetHeader>
               <div className="flex flex-col space-y-4">
-                <Link href="/" className="flex items-center gap-2 mb-6" onClick={() => setIsMobileMenuOpen(false)}>
-                  <MessageCircle className="h-8 w-8 text-primary" /> {/* Primary is Kerala Green */}
-                  <span className="text-xl font-bold text-foreground">Buildly</span>
-                </Link>
                 {navLinks.map((link) => {
                   if (link.isAdmin && !pathname.startsWith('/admin')) {
                     return null;
