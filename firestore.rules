@@ -1,0 +1,77 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Users Collection:
+    // - Anyone can create their own user document (on signup).
+    // - Authenticated users can read their own document.
+    // - Authenticated users can update their own document (e.g., name, phone, address).
+    // - Role cannot be changed by the user after creation.
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.email == request.auth.token.email
+                    && (request.resource.data.role == 'customer' || request.resource.data.role == 'expert')
+                    && !('role' in resource.data) || request.resource.data.role == resource.data.role; // Role immutable after write
+      allow update: if request.auth != null && request.auth.uid == userId
+                     && !('role' in request.resource.data) // Prevent role field from being in update
+                     && !('uid' in request.resource.data) // Prevent uid field from being in update
+                     && !('email' in request.resource.data); // Prevent email from being updated directly by client
+      // Deletion of user documents should typically be handled by a Cloud Function on Auth user deletion.
+      allow delete: if false; 
+    }
+
+    // Experts Collection:
+    // - Only authenticated users with 'expert' role can create/update their own expert profile.
+    // - UID must match the authenticated user's UID.
+    // - Anyone can read expert profiles (for browsing).
+    match /experts/{expertId} {
+      allow read: if true; // Publicly readable for browsing experts
+      allow create: if request.auth != null && request.auth.uid == expertId
+                    && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'expert'
+                    && request.resource.data.uid == request.auth.uid;
+      allow update: if request.auth != null && request.auth.uid == expertId
+                     && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'expert'
+                     && !('uid' in request.resource.data); // UID immutable
+      // Deletion should be handled carefully, perhaps by admin or on account closure.
+      allow delete: if false; // Or restrict to admin/owner
+    }
+
+    // Services Collection:
+    // - Publicly readable.
+    // - Typically managed by admins (not directly by users via client).
+    match /services/{serviceId} {
+      allow read: if true;
+      allow write: if false; // Managed by Admin/backend
+    }
+
+    // Bookings Collection:
+    // - Customers can create bookings for themselves.
+    // - Customers can read their own bookings.
+    // - Experts can read bookings assigned to them.
+    // - Updating status might be restricted to experts or specific transitions.
+    match /bookings/{bookingId} {
+      allow read: if request.auth != null && 
+                     (request.auth.uid == resource.data.userId || request.auth.uid == resource.data.expertId);
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId
+                     && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'customer';
+      allow update: if request.auth != null && 
+                      ( (request.auth.uid == resource.data.userId && !('status' in request.resource.data)) // Customer can update notes, etc. but not status directly if not allowed
+                      || (request.auth.uid == resource.data.expertId) ); // Expert can update (e.g. status)
+      // Deletion might be restricted or soft delete preferred.
+      allow delete: if request.auth != null && request.auth.uid == resource.data.userId && resource.data.status == 'pending'; // Customer can cancel pending
+    }
+
+    // MaterialTips Collection (from previous structure, if still used)
+    match /materialTips/{tipId} {
+      allow read: if true;
+      allow write: if false; // Managed by Admin/backend
+    }
+    
+    // Add rules for other collections like projectPhotos if they are top-level
+
+  }
+}

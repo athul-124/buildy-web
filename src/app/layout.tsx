@@ -1,8 +1,10 @@
+
 import type { Metadata, Viewport } from 'next';
 import { Noto_Sans_Malayalam, Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import { Providers } from '@/components/Providers';
+import { Providers } from '@/components/Providers'; // Original Providers
+import { AuthProvider } from '@/contexts/AuthContext'; // New AuthProvider
 
 const notoSansMalayalam = Noto_Sans_Malayalam({
   subsets: ['malayalam', 'latin'],
@@ -32,16 +34,15 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "default",
     title: APP_NAME,
-    // startUpImage: [], // You can add startup images for iOS
   },
   formatDetection: {
     telephone: false,
   },
-  manifest: "/manifest.json", // Link to the manifest file
+  manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#318f3e", // Corresponds to HSL 135 55% 42% (Primary Green)
+  themeColor: "#38a169", // Kerala Green (Primary for UI buttons)
 };
 
 export default function RootLayout({
@@ -52,10 +53,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${notoSansMalayalam.variable} ${inter.variable} font-sans antialiased`}>
-        <Providers>
-          {children}
-          <Toaster />
-        </Providers>
+        <AuthProvider> {/* Wrap with AuthProvider */}
+          <Providers> {/* Original Providers, if any actual providers were inside */}
+            {children}
+            <Toaster />
+          </Providers>
+        </AuthProvider>
       </body>
     </html>
   );
