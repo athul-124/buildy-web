@@ -35,34 +35,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setUser(firebaseUser);
-      if (firebaseUser) {
-        try {
-          const userRef = doc(db, 'users', firebaseUser.uid);
-          const userSnap = await getDoc(userRef);
-          if (userSnap.exists()) {
-            const userData = userSnap.data() as UserDocument;
-            setUserDoc(userData);
-            setRole(userData.role);
-          } else {
-            // This case might happen if user exists in Auth but not Firestore
-            // Potentially log them out or prompt to complete profile
-            console.warn("User document not found in Firestore for UID:", firebaseUser.uid);
+    let unsubscribe = () => {};
+    
+    try {
+      // Check if auth is properly initialized
+      if (!auth) {
+        throw new Error('Firebase auth is not initialized');
+      }
+      
+      unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        setUser(firebaseUser);
+        if (firebaseUser) {
+          try {
+            const userRef = doc(db, 'users', firebaseUser.uid);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+              const userData = userSnap.data() as UserDocument;
+              setUserDoc(userData);
+              setRole(userData.role);
+            } else {
+              // This case might happen if user exists in Auth but not Firestore
+              // Potentially log them out or prompt to complete profile
+              console.warn("User document not found in Firestore for UID:", firebaseUser.uid);
+              setUserDoc(null);
+              setRole(null);
+            }
+          } catch (error) {
+            console.error("Error fetching user document:", error);
             setUserDoc(null);
             setRole(null);
           }
-        } catch (error) {
-          console.error("Error fetching user document:", error);
+        } else {
           setUserDoc(null);
           setRole(null);
         }
-      } else {
-        setUserDoc(null);
-        setRole(null);
-      }
+        setLoading(false);
+      });
+    } catch (error) {
+      console.error("Error setting up auth state listener:", error);
       setLoading(false);
-    });
+    }
 
     return () => unsubscribe();
   }, []);
