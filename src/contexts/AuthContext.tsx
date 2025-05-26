@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
+    console.log("AuthContext: Setting up auth state listener");
     let unsubscribe = () => {};
     
     try {
@@ -43,22 +44,52 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error('Firebase auth is not initialized');
       }
       
+      // Set up the auth state listener
       unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        console.log("AuthContext: Auth state changed", { 
+          isAuthenticated: !!firebaseUser,
+          userId: firebaseUser?.uid
+        });
+        
         setUser(firebaseUser);
+        
         if (firebaseUser) {
           try {
             const userRef = doc(db, 'users', firebaseUser.uid);
             const userSnap = await getDoc(userRef);
+            
             if (userSnap.exists()) {
               const userData = userSnap.data() as UserDocument;
+              console.log("AuthContext: User document found", { 
+                role: userData.role,
+                name: userData.name
+              });
               setUserDoc(userData);
               setRole(userData.role);
             } else {
               // This case might happen if user exists in Auth but not Firestore
-              // Potentially log them out or prompt to complete profile
               console.warn("User document not found in Firestore for UID:", firebaseUser.uid);
               setUserDoc(null);
               setRole(null);
+              
+              // Attempt to fetch user document again after a short delay
+              // This helps in cases where Firestore might be lagging
+              setTimeout(async () => {
+                try {
+                  const retryUserSnap = await getDoc(userRef);
+                  if (retryUserSnap.exists()) {
+                    const userData = retryUserSnap.data() as UserDocument;
+                    console.log("AuthContext: User document found on retry", { 
+                      role: userData.role,
+                      name: userData.name
+                    });
+                    setUserDoc(userData);
+                    setRole(userData.role);
+                  }
+                } catch (retryError) {
+                  console.error("Error on retry fetching user document:", retryError);
+                }
+              }, 1000);
             }
           } catch (error) {
             console.error("Error fetching user document:", error);
@@ -66,9 +97,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setRole(null);
           }
         } else {
+          console.log("AuthContext: User is not authenticated");
           setUserDoc(null);
           setRole(null);
         }
+        
         setLoading(false);
       });
     } catch (error) {
@@ -76,7 +109,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     }
 
-    return () => unsubscribe();
+    // Clean up the auth state listener when the component unmounts
+    return () => {
+      console.log("AuthContext: Cleaning up auth state listener");
+      unsubscribe();
+    };
   }, []);
 
   const signUp = async (name: string, email: string, pass: string, phone: string, selectedRole: UserRole, address?: string) => {
@@ -111,10 +148,60 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logIn = async (email: string, pass: string) => {
+    console.log("AuthContext: Attempting login");
     const userCredential = await signInWithEmailAndPassword(auth, email, pass);
     const firebaseUser = userCredential.user;
-    // Auth state change will trigger useEffect to fetch userDoc and role
-    setUser(firebaseUser); // Optimistically set user, useEffect will handle the rest
+    
+    console.log("AuthContext: Login successful, user authenticated");
+    
+    // Optimistically set user
+    setUser(firebaseUser);
+    
+    // Immediately fetch user document instead of waiting for auth state change
+    // This helps ensure we have the user data as soon as possible
+    try {
+      const userRef = doc(db, 'users', firebaseUser.uid);
+      const userSnap = await getDoc(userRef);
+      
+      if (userSnap.exists()) {
+        const userData = userSnap.data() as UserDocument;
+        console.log("AuthContext logIn: User document found", { 
+          role: userData.role,
+          name: userData.name
+        });
+        setUserDoc(userData);
+        setRole(userData.role);
+      } else {
+        console.warn("AuthContext logIn: User document not found in Firestore for UID:", firebaseUser.uid);
+        setUserDoc(null);
+        setRole(null);
+        
+        // Attempt to fetch user document again after a short delay
+        setTimeout(async () => {
+          try {
+            const retryUserSnap = await getDoc(userRef);
+            if (retryUserSnap.exists()) {
+              const userData = retryUserSnap.data() as UserDocument;
+              console.log("AuthContext logIn: User document found on retry", { 
+                role: userData.role,
+                name: userData.name
+              });
+              setUserDoc(userData);
+              setRole(userData.role);
+            }
+          } catch (retryError) {
+            console.error("AuthContext logIn: Error on retry fetching user document:", retryError);
+          }
+        }, 1000);
+      }
+    } catch (error) {
+      console.error("AuthContext logIn: Error fetching user document:", error);
+      setUserDoc(null);
+      setRole(null);
+    }
+    
+    // Auth state change will also trigger useEffect to fetch userDoc and role as a backup
+    return firebaseUser; // Return the user in case the caller needs it
   };
 
   const logOut = async () => {

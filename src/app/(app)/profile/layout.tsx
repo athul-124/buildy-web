@@ -11,10 +11,21 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
+    // Add debug logging
+    console.log("Profile layout state:", { 
+      loading, 
+      userAuthenticated: !!user,
+      userRole: role
+    });
+    
+    // Only redirect if we're sure the user is not authenticated (loading is complete)
     if (!loading && !user) {
-      router.push("/login?redirect=/profile"); // Redirect to login if not authenticated
+      console.log("Profile layout: User not authenticated, redirecting to login");
+      // Store the current URL to redirect back after login
+      const currentPath = window.location.pathname;
+      router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, role]);
 
   if (loading) {
     return (

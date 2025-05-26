@@ -1,68 +1,67 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-
     // === User Documents ===
     match /users/{userId} {
+      // Allow user to create their own document
       allow create: if request.auth != null && request.auth.uid == userId;
-
-      // Allow user to read and update ONLY their own document, but not change role
-      allow read, update: if request.auth != null 
-                          && request.auth.uid == userId
-                          && request.resource.data.role == resource.data.role;
-
+      
+      // Allow user to read their own document (no role check needed for read)
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      // Allow user to update their own document, but not change role
+      allow update: if request.auth != null 
+                    && request.auth.uid == userId
+                    && request.resource.data.role == resource.data.role;
+      
       // Prevent deleting user docs
       allow delete: if false;
-
+      
       // Prevent listing all user documents
       allow list: if false;
     }
-
+    
     // === Expert Profiles ===
     match /experts/{expertId} {
       // Only the expert can create/update their profile
       allow create, update: if request.auth != null && request.auth.uid == expertId;
-
+      
       // Any logged-in user can view expert profiles
       allow read: if request.auth != null;
-
+      
       allow delete: if false;
-
-      // Optional: prevent listing all experts unless needed
-      // allow list: if false;
     }
-
+    
     // === Bookings ===
     match /bookings/{bookingId} {
       // Any logged-in user can create a booking
       allow create: if request.auth != null;
-
+      
       // Only the customer or the expert involved can read or update
       allow read, update, delete: if request.auth != null &&
         (request.auth.uid == resource.data.userId || request.auth.uid == resource.data.expertId);
     }
-
+    
     // === Services ===
     match /services/{serviceId} {
       // Public read access
       allow read: if true;
-
+      
       // Optional: Restrict writes to admins in future
       allow write: if false;
     }
-
+    
     // === Material Tips ===
     match /materialTips/{tipId} {
       allow read: if true;
       allow write: if false;
     }
-
+    
     // === Admin access placeholder ===
     function isAdmin() {
       return request.auth != null && request.auth.token.admin == true;
     }
-
+    
     // Example: Admin-only access to future collection
     // match /adminOnly/{docId} {
     //   allow read, write: if isAdmin();

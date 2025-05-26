@@ -15,15 +15,49 @@ export default function CustomerProfilePage() {
   const router = useRouter();
 
   useEffect(() => {
+    // Add debug logging
+    console.log("Customer profile state:", { 
+      loading, 
+      userAuthenticated: !!user,
+      userRole: role,
+      userDocExists: !!userDoc
+    });
+    
+    // Only take action when loading is complete
     if (!loading) {
       if (!user) {
+        console.log("Customer profile: User not authenticated, redirecting to login");
         router.push('/login?redirect=/profile/customer');
       } else if (role && role !== 'customer') {
+        console.log("Customer profile: User has wrong role, redirecting");
         // If logged in user is not a customer, redirect them appropriately
         router.push(role === 'expert' ? '/profile/expert' : '/');
       }
     }
-  }, [user, role, loading, router]);
+  }, [user, role, loading, router, userDoc]);
+  
+  // Additional effect to handle case where user is authenticated but userDoc is not yet loaded
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    
+    if (user && !userDoc && !loading) {
+      console.log("Customer profile: User authenticated but userDoc not loaded, waiting...");
+      
+      // Set a timeout to check if userDoc gets loaded
+      timeoutId = setTimeout(() => {
+        if (!userDoc) {
+          console.log("Customer profile: userDoc still not loaded after timeout, refreshing auth state");
+          // If userDoc is still not loaded after timeout, we might need to refresh the page
+          // or implement a retry mechanism in the AuthContext
+          window.location.reload();
+        }
+      }, 3000);
+    }
+    
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [user, userDoc, loading]);
 
   if (loading || !userDoc || role !== 'customer') {
     // Show loading or redirecting state, or if role is incorrect (handled by useEffect)

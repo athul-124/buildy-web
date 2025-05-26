@@ -25,7 +25,7 @@ type LoginFormInputs = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const { logIn, role } = useAuth(); // Removed userDoc as it's fetched post-login by context
+  const { logIn, role, user, loading } = useAuth(); // Added user and loading
   const router = useRouter();
   const { toast } = useToast();
 
@@ -37,30 +37,20 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       await logIn(data.email, data.password);
-      // The AuthContext useEffect will fetch userDoc and role.
-      // We need to wait for the role to be set before redirecting.
-      // A better approach might be to have logIn return the userDoc or for AuthContext to manage redirection.
-      // For now, we'll use a timeout to give AuthContext time to update.
-      // This is not ideal and should be refactored for production.
+      
       toast({
         title: "Logged In!",
         description: "Welcome back to Buildly!",
       });
       
-      // Attempt to redirect based on role, might need a slight delay or a more robust way
-      // to wait for role to be populated in AuthContext
-      setTimeout(() => {
-        // Re-check role from context after login might be more reliable
-        // This part is tricky as context update is async
-        if (role === 'expert') {
-            router.push('/profile/expert');
-        } else if (role === 'customer') {
-            router.push('/profile/customer');
-        } else {
-            // Fallback if role isn't immediately available, or a better check for role from useAuth()
-             router.push('/'); 
-        }
-      }, 500); // Small delay, adjust as needed or implement a more robust solution
+      // We don't need to handle redirection here anymore
+      // The useEffect will handle redirection based on authentication state
+      // This avoids race conditions and duplicate redirects
+      console.log("Login successful - useEffect will handle redirection");
+      
+      // Note: We're not manually redirecting here anymore.
+      // The useEffect hook will detect the authentication state change
+      // and redirect appropriately based on role and any redirect parameters.
 
     } catch (error) {
       const firebaseError = error as AuthError;
@@ -81,16 +71,47 @@ export default function LoginPage() {
     }
   };
   
-  // Effect to redirect if role becomes available after login
+  // Effect to redirect if user is already authenticated or becomes authenticated
   useEffect(() => {
-    if (role) {
-      if (role === 'expert') {
+    // Check URL for redirect parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectPath = urlParams.get('redirect');
+    
+    console.log("Login page: Auth state changed", { 
+      isAuthenticated: !!user,
+      role, 
+      redirectPath,
+      loading
+    });
+    
+    // Only proceed if authentication check is complete
+    if (!loading && user) {
+      if (redirectPath) {
+        // If there's a redirect path in the URL, use that
+        console.log(`Login page: Redirecting to ${redirectPath}`);
+        router.push(redirectPath);
+      } else if (role === 'expert') {
+        console.log("Login page: Redirecting to expert profile");
         router.push('/profile/expert');
       } else if (role === 'customer') {
+        console.log("Login page: Redirecting to customer profile");
         router.push('/profile/customer');
+      } else {
+        // If role is not yet available but user is authenticated
+        console.log("Login page: User authenticated but role not yet available");
+        // Wait a bit longer for role to be set
+        setTimeout(() => {
+          if (role) {
+            const profilePath = role === 'expert' ? '/profile/expert' : '/profile/customer';
+            router.push(profilePath);
+          } else {
+            // Fallback to home if role still not available
+            router.push('/');
+          }
+        }, 1000); // Give more time for role to be set
       }
     }
-  }, [role, router]);
+  }, [user, role, router, loading]);
 
 
   return (

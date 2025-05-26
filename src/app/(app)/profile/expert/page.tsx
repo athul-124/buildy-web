@@ -46,36 +46,75 @@ export default function ExpertProfilePage() {
   });
 
   useEffect(() => {
+    // Add debug logging
+    console.log("Expert profile state:", { 
+      loading, 
+      userAuthenticated: !!user,
+      userRole: role,
+      userDocExists: !!userDoc
+    });
+    
+    // Only take action when loading is complete
     if (!loading) {
       if (!user) {
+        console.log("Expert profile: User not authenticated, redirecting to login");
         router.push('/login?redirect=/profile/expert');
       } else if (role && role !== 'expert') {
+        console.log("Expert profile: User has wrong role, redirecting");
         router.push(role === 'customer' ? '/profile/customer' : '/');
       } else if (user && role === 'expert') {
+        console.log("Expert profile: User is authenticated expert, fetching data");
         // Fetch expert specific data
         const fetchExpertData = async () => {
-          const expertRef = doc(db, 'experts', user.uid);
-          const expertSnap = await getDoc(expertRef);
-          if (expertSnap.exists()) {
-            const data = expertSnap.data() as ExpertProfile;
-            setExpertData(data);
-            // Pre-fill form
-            setValue('displayName', data.displayName || userDoc?.name || '');
-            setValue('bio', data.bio || '');
-            setValue('specialties', data.specialties?.join(', ') || '');
-            setValue('servicesOffered', data.servicesOffered?.join(', ') || '');
-            setValue('location', data.location || '');
-            setValue('phone', userDoc?.phone || '');
-          } else {
-             // If expert doc doesn't exist, prefill with userDoc name
-            setValue('displayName', userDoc?.name || '');
-            setValue('phone', userDoc?.phone || '');
+          try {
+            const expertRef = doc(db, 'experts', user.uid);
+            const expertSnap = await getDoc(expertRef);
+            if (expertSnap.exists()) {
+              const data = expertSnap.data() as ExpertProfile;
+              setExpertData(data);
+              // Pre-fill form
+              setValue('displayName', data.displayName || userDoc?.name || '');
+              setValue('bio', data.bio || '');
+              setValue('specialties', data.specialties?.join(', ') || '');
+              setValue('servicesOffered', data.servicesOffered?.join(', ') || '');
+              setValue('location', data.location || '');
+              setValue('phone', userDoc?.phone || '');
+            } else {
+              // If expert doc doesn't exist, prefill with userDoc name
+              setValue('displayName', userDoc?.name || '');
+              setValue('phone', userDoc?.phone || '');
+            }
+          } catch (error) {
+            console.error("Error fetching expert data:", error);
           }
         };
         fetchExpertData();
       }
     }
   }, [user, userDoc, role, loading, router, setValue]);
+  
+  // Additional effect to handle case where user is authenticated but userDoc is not yet loaded
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    
+    if (user && !userDoc && !loading) {
+      console.log("Expert profile: User authenticated but userDoc not loaded, waiting...");
+      
+      // Set a timeout to check if userDoc gets loaded
+      timeoutId = setTimeout(() => {
+        if (!userDoc) {
+          console.log("Expert profile: userDoc still not loaded after timeout, refreshing auth state");
+          // If userDoc is still not loaded after timeout, we might need to refresh the page
+          // or implement a retry mechanism in the AuthContext
+          window.location.reload();
+        }
+      }, 3000);
+    }
+    
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [user, userDoc, loading]);
 
   const onSubmit: SubmitHandler<ExpertProfileFormInputs> = async (data) => {
     if (!user) return;
